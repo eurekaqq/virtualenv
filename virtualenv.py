@@ -25,6 +25,7 @@ import distutils.spawn
 import distutils.sysconfig
 import errno
 import glob
+import locale
 import logging
 import optparse
 import os
@@ -39,6 +40,7 @@ import zipfile
 import zlib
 from distutils.util import strtobool
 from os.path import join
+
 
 try:
     import ConfigParser
@@ -930,7 +932,11 @@ def call_subprocess(
             with proc.stdin:
                 proc.stdin.write(stdin)
 
-        encoding = sys.getdefaultencoding()
+        encoding = None
+        if os.name.lower() == 'nt':
+            encoding = locale.getdefaultlocale()[1]
+        else:
+            encoding = sys.getdefaultencoding()
         fs_encoding = sys.getfilesystemencoding()
         with proc.stdout as stdout:
             while 1:
